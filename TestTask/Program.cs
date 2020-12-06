@@ -1,10 +1,5 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
 namespace TestTask
@@ -70,7 +65,7 @@ namespace TestTask
                     }
                 }
 
-                Console.WriteLine(Method(text, (lang == 1 ? numbersUkr : numbersEng), cents, lang));
+                Console.WriteLine(RefactNumbersInWords(text, (lang == 1 ? numbersUkr : numbersEng), cents, lang));
             }
             catch (Exception e)
             {
@@ -104,12 +99,12 @@ namespace TestTask
             }
 
         }
-        private static string Method(string text, Dictionary<int, string> numbersEng, string cents, byte _lang)
+        private static string RefactNumbersInWords(string text, Dictionary<int, string> numbersEng, string cents, byte _lang)
         {
             string output = string.Empty;
             byte lang = _lang;
-            string[] masiv = new string[text.Length % 3 == 0 ? text.Length / 3 : text.Length / 3 + 1]; 
-            for (int i = 0, j = 0, k = 0; i < text.Length; i++) // розбиття масиву на розряди ["1","234","567"]
+            string[] arrayOfDischarges = new string[text.Length % 3 == 0 ? text.Length / 3 : text.Length / 3 + 1]; 
+            for (int i = 0, j = 0, k = 0; i < text.Length; i++) // розбиття строки на розряди ["1","234","567"]
             {
                 if (text.Length % 3 == j && k == 0 && !(text.Length % 3 == 0)) //умова, якщо перший розряд менше 3
                 {
@@ -121,28 +116,28 @@ namespace TestTask
                     k++;
                     j = 0;
                 }
-                masiv[k] += text[i];
+                arrayOfDischarges[k] += text[i];
                 j++;
             }
 
             int number = 0;
-            int num = masiv.Length;
+            int num = arrayOfDischarges.Length;
             string def = "10" + num;
             string engfirst = "";
 
-            for (int i = 0; i < masiv.Length; i++)
+            for (int i = 0; i < arrayOfDischarges.Length; i++)
             {
-                number = int.Parse(masiv[i]);
+                number = int.Parse(arrayOfDischarges[i]);
 
-                if ((masiv[i].Length < 3 || masiv[i][0] == '0') && masiv[i] != "000") //якщо розряд менше 3 або перший символ з розряду == 0
+                if ((arrayOfDischarges[i].Length < 3 || arrayOfDischarges[i][0] == '0') && arrayOfDischarges[i] != "000") //якщо розряд менше 3 або перший символ з розряду == 0
                 {
-                    if (i == masiv.Length - 1) //якщо останній розряд
+                    if (i == arrayOfDischarges.Length - 1) //якщо останній розряд
                     {
-                        output += $"{TwoSign(masiv[i], numbersEng)} ";
+                        output += $"{TwoSign(arrayOfDischarges[i], numbersEng)} ";
                     }
-                    else output += $"{ReductionToPluralUkr(masiv[i], numbersEng, def, lang, number)} ";
+                    else output += $"{ReductionToPluralUkr(arrayOfDischarges[i], numbersEng, def, lang, number)} ";
                 }
-                else if (i == masiv.Length - 1 && masiv[i] != "000") //якщо останній розряд
+                else if (i == arrayOfDischarges.Length - 1 && arrayOfDischarges[i] != "000") //якщо останній розряд
                 {
                     switch (lang)
                     {
@@ -154,9 +149,9 @@ namespace TestTask
                             break;
                     }
 
-                    output += $"{engfirst} " + $"{TwoSign(masiv[i].Substring(1, masiv[i].Length - 1), numbersEng)} ";
+                    output += $"{engfirst} " + $"{TwoSign(arrayOfDischarges[i].Substring(1, arrayOfDischarges[i].Length - 1), numbersEng)} ";
                 }
-                else if (masiv[i] != "000")
+                else if (arrayOfDischarges[i] != "000")
                 {
                     switch (lang)
                     {
@@ -167,18 +162,19 @@ namespace TestTask
                             engfirst = (numbersEng[number / 100] + " " + numbersEng[101]);//перший символ прописом з розряду for English
                             break;
                     }
-                    output += $"{engfirst} " + $"{ReductionToPluralUkr(masiv[i].Substring(1, masiv[i].Length - 1), numbersEng, def, lang, number) } ";
+                    output += $"{engfirst} " + $"{ReductionToPluralUkr(arrayOfDischarges[i].Substring(1, arrayOfDischarges[i].Length - 1), numbersEng, def, lang, number) } ";
                 }
                 else output += string.Empty;
                 num--;
                 def = "10" + num;
             }
 
-            return Output(numbersEng, number, lang, cents, output);
+            return Output(numbersEng, number, lang, cents, output,arrayOfDischarges[arrayOfDischarges.Length-1]).Replace("  "," ");
         }
-        private static string Output(Dictionary<int, string> numbersUkr, int number, byte lang, string cents, string output) //повертає правильний вивід валюти і копійок
+        private static string Output(Dictionary<int, string> numbersUkr, int number, byte lang, string cents, string output, string lastDischarge) //повертає правильний вивід валюти і копійок
         {
             int centNumber = int.Parse(cents);
+            byte lastNumber = byte.Parse(lastDischarge[lastDischarge.Length - 1].ToString());
             if (output.Length < 2)
             {
                 output = "";
@@ -188,16 +184,16 @@ namespace TestTask
                 switch (lang)
                 {
                     case 1://For Ukrainian
-                        if (number > 1 && number < 5)
+                        if (lastNumber > 1 && lastNumber < 5)
                         {
                             output += numbersUkr[998].Substring(0, numbersUkr[998].Length - 1) + "i" + " "; break; // 2-4 гривні
                         }
-                        else if (number > 4)
+                        else if (lastNumber == 1)//одна гривня
                         {
-                            output += numbersUkr[999] + " "; break; // 5 і більше гривень
+                            output += numbersUkr[998] + " "; break; 
                         }
 
-                        else output += numbersUkr[998] + " "; break;
+                        else output += numbersUkr[999] + " "; break; // 5 і більше гривень
                     case 2: //For English
                         if (number > 1)
                         {
@@ -224,7 +220,7 @@ namespace TestTask
                         {
                             output += TwoSign(cents, numbersUkr) + " " + numbersUkr[109] + " "; break; //5 і більше копійок
                         }
-                        else if (centNumber == 1) { output += numbersUkr[111] + " " + numbersUkr[108] + " "; break; }//одна копійка
+                        else if (centNumber == 1) { output += numbersUkr[1] + " " + numbersUkr[108] + " "; break; }//одна копійка
                         else output += TwoSign(cents, numbersUkr) + " " + numbersUkr[108] + " "; break;
                     case 2:
                         if (centNumber > 1)
@@ -378,8 +374,8 @@ namespace TestTask
             numbersEng.Add(70, "сiмдесят");
             numbersEng.Add(80, "вiсiмдесят");
             numbersEng.Add(90, "дев'яносто");
-            numbersEng.Add(109, "копійок");
-            numbersEng.Add(108, "копійка");
+            numbersEng.Add(109, "копiйок");
+            numbersEng.Add(108, "копiйка");
             numbersEng.Add(998, "гривня");
             numbersEng.Add(999, "гривень");
             numbersEng.Add(101, "сто");
