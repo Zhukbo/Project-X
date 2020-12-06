@@ -27,6 +27,10 @@ namespace TestTask
                         else check = false;
 
                     }
+                    catch (OverflowException)
+                    {
+                        check = false;
+                    }
                     catch (FormatException) 
                     {
                         check = false;
@@ -69,7 +73,7 @@ namespace TestTask
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
             }
         }
         private static bool Validate(string text, int lang, char dot)
@@ -237,6 +241,7 @@ namespace TestTask
             string text = TwoSign(textELement, numbersUkr) + " ";
             int lastCell = int.Parse(textELement[textELement.Length - 1].ToString());
             string numeral = numbersUkr[int.Parse(category)];
+
             if (lang == 2)//if English lang
             {
                 return text + numeral;
@@ -258,10 +263,6 @@ namespace TestTask
             {
                 if (category == "104" || category == "103")
                 {
-                    /*if (lastCell == 2)
-                    {
-                        text = text.Substring(0, text.Length - 2) + "а"; //для 2-4  мільйони / мільярди
-                    }*/
                     numeral += "и"; // 2-4 мільйони і мільярди
                 }
                 if (category == "102")
