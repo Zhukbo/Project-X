@@ -103,7 +103,7 @@ namespace TestTask
             }
 
         }
-        private static string RefactNumbersInWords(string text, Dictionary<int, string> numbersEng, string cents, byte _lang)
+        private static string RefactNumbersInWords(string text, Dictionary<int, string> numbersOfDictinary, string cents, byte _lang)
         {
             string output = string.Empty;
             byte lang = _lang;
@@ -137,45 +137,45 @@ namespace TestTask
                 {
                     if (i == arrayOfDischarges.Length - 1) //якщо останній розряд
                     {
-                        output += $"{TwoSign(arrayOfDischarges[i], numbersEng)} ";
+                        output += $"{TwoSign(arrayOfDischarges[i], numbersOfDictinary)} ";
                     }
-                    else output += $"{ReductionToPluralUkr(arrayOfDischarges[i], numbersEng, def, lang, number)} ";
+                    else output += $"{ReductionToPluralUkr(arrayOfDischarges[i], numbersOfDictinary, def, lang, number)} ";
                 }
                 else if (i == arrayOfDischarges.Length - 1 && arrayOfDischarges[i] != "000") //якщо останній розряд
                 {
                     switch (lang)
                     {
                         case 1:
-                            engfirst = HundredUkr((number / 100).ToString(), numbersEng);
+                            engfirst = HundredUkr((number / 100).ToString(), numbersOfDictinary);
                             break;
                         case 2:
-                            engfirst = (numbersEng[number / 100] + " " + numbersEng[101]);
+                            engfirst = (numbersOfDictinary[number / 100] + " " + numbersOfDictinary[101]);
                             break;
                     }
 
-                    output += $"{engfirst} " + $"{TwoSign(arrayOfDischarges[i].Substring(1, arrayOfDischarges[i].Length - 1), numbersEng)} ";
+                    output += $"{engfirst} " + $"{TwoSign(arrayOfDischarges[i].Substring(1, arrayOfDischarges[i].Length - 1), numbersOfDictinary)} ";
                 }
                 else if (arrayOfDischarges[i] != "000")
                 {
                     switch (lang)
                     {
                         case 1:
-                            engfirst = HundredUkr((number / 100).ToString(), numbersEng); //перший символ прописом з розряду для української
+                            engfirst = HundredUkr((number / 100).ToString(), numbersOfDictinary); //перший символ прописом з розряду для української
                             break;
                         case 2:
-                            engfirst = (numbersEng[number / 100] + " " + numbersEng[101]);//перший символ прописом з розряду for English
+                            engfirst = (numbersOfDictinary[number / 100] + " " + numbersOfDictinary[101]);//перший символ прописом з розряду for English
                             break;
                     }
-                    output += $"{engfirst} " + $"{ReductionToPluralUkr(arrayOfDischarges[i].Substring(1, arrayOfDischarges[i].Length - 1), numbersEng, def, lang, number) } ";
+                    output += $"{engfirst} " + $"{ReductionToPluralUkr(arrayOfDischarges[i].Substring(1, arrayOfDischarges[i].Length - 1), numbersOfDictinary, def, lang, number) } ";
                 }
                 else output += string.Empty;
                 num--;
                 def = "10" + num;
             }
 
-            return Output(numbersEng, number, lang, cents, output,arrayOfDischarges[arrayOfDischarges.Length-1]).Replace("  "," ");
+            return Output(numbersOfDictinary, number, lang, cents, output,arrayOfDischarges[arrayOfDischarges.Length-1]).Replace("  "," ");
         }
-        private static string Output(Dictionary<int, string> numbersUkr, int number, byte lang, string cents, string output, string lastDischarge) //повертає правильний вивід валюти і копійок
+        private static string Output(Dictionary<int, string> numbersOfDictionary, int number, byte lang, string cents, string output, string lastDischarge) //повертає правильний вивід валюти і копійок
         {
             int centNumber = int.Parse(cents);
             byte lastNumber = byte.Parse(lastDischarge[lastDischarge.Length - 1].ToString());
@@ -190,23 +190,23 @@ namespace TestTask
                     case 1://For Ukrainian
                         if (lastNumber > 1 && lastNumber < 5)
                         {
-                            output += numbersUkr[998].Substring(0, numbersUkr[998].Length - 1) + "i" + " "; break; // 2-4 гривні
+                            output += numbersOfDictionary[998].Substring(0, numbersOfDictionary[998].Length - 1) + "i" + " "; break; // 2-4 гривні
                         }
                         else if (lastNumber == 1)//одна гривня
                         {
-                            output += numbersUkr[998] + " "; break; 
+                            output += numbersOfDictionary[998] + " "; break; 
                         }
 
-                        else output += numbersUkr[999] + " "; break; // 5 і більше гривень
+                        else output += numbersOfDictionary[999] + " "; break; // 5 і більше гривень
                     case 2: //For English
                         if (number > 1)
                         {
-                            output += numbersUkr[990] + "s" + " "; break; //dollars
+                            output += numbersOfDictionary[990] + "s" + " "; break; //dollars
                         }
-                        else output += numbersUkr[990] + " "; break; //dollar
+                        else output += numbersOfDictionary[990] + " "; break; //dollar
                 }
             }
-            if (number != 0 && cents != "00") { output += numbersUkr[105] + " "; }
+            if (number != 0 && cents != "00") { output += numbersOfDictionary[105] + " "; }
             if (cents == "00")
             {
                 return output;
@@ -218,29 +218,29 @@ namespace TestTask
                     case 1:
                         if (centNumber > 1 && centNumber < 5)
                         {
-                            output += TwoSign(cents, numbersUkr) + " " + numbersUkr[108].Substring(0, numbersUkr[108].Length - 1) + "и" + " "; break; // 2-4 копійки
+                            output += TwoSign(cents, numbersOfDictionary) + " " + numbersOfDictionary[108].Substring(0, numbersOfDictionary[108].Length - 1) + "и" + " "; break; // 2-4 копійки
                         }
                         else if (centNumber > 4)
                         {
-                            output += TwoSign(cents, numbersUkr) + " " + numbersUkr[109] + " "; break; //5 і більше копійок
+                            output += TwoSign(cents, numbersOfDictionary) + " " + numbersOfDictionary[109] + " "; break; //5 і більше копійок
                         }
-                        else if (centNumber == 1) { output += numbersUkr[1] + " " + numbersUkr[108] + " "; break; }//одна копійка
-                        else output += TwoSign(cents, numbersUkr) + " " + numbersUkr[108] + " "; break;
+                        else if (centNumber == 1) { output += numbersOfDictionary[1] + " " + numbersOfDictionary[108] + " "; break; }//одна копійка
+                        else output += TwoSign(cents, numbersOfDictionary) + " " + numbersOfDictionary[108] + " "; break;
                     case 2:
                         if (centNumber > 1)
                         {
-                            output += TwoSign(cents, numbersUkr) + " " + numbersUkr[110] + "s" + " "; break; //cents
+                            output += TwoSign(cents, numbersOfDictionary) + " " + numbersOfDictionary[110] + "s" + " "; break; //cents
                         }
-                        else output += TwoSign(cents, numbersUkr) + " " + numbersUkr[110] + " "; break; //cent
+                        else output += TwoSign(cents, numbersOfDictionary) + " " + numbersOfDictionary[110] + " "; break; //cent
                 }
             }
             return output;
         }
-        private static string ReductionToPluralUkr(string textELement, Dictionary<int, string> numbersUkr, string category, byte lang, int number = 0)//Method for plural in Ukrainian lang
+        private static string ReductionToPluralUkr(string textELement, Dictionary<int, string> numbersOfDictionary, string category, byte lang, int number = 0)//Method for plural in Ukrainian lang
         {
-            string text = TwoSign(textELement, numbersUkr) + " ";
+            string text = TwoSign(textELement, numbersOfDictionary) + " ";
             int lastCell = int.Parse(textELement[textELement.Length - 1].ToString());
-            string numeral = numbersUkr[int.Parse(category)];
+            string numeral = numbersOfDictionary[int.Parse(category)];
 
             if (lang == 2)//if English lang
             {
@@ -274,7 +274,7 @@ namespace TestTask
             {
                 if (category == "104" || category == "103") //condition for milliard (104) in Dictionary and million (103) in Dictionary
                 {
-                    text = numbersUkr[111] + " ";
+                    text = numbersOfDictionary[111] + " ";
                     return text + numeral;
                 }
             }
@@ -286,17 +286,17 @@ namespace TestTask
         {
             return numbersUkr[int.Parse(number + "01")];//для сто, двісті, триста ...
         }
-        private static string TwoSign(string text, Dictionary<int, string> numbersEng) //повертає назву прописом для 2 символів
+        private static string TwoSign(string text, Dictionary<int, string> numbersOfDictionary) //повертає назву прописом для 2 символів
         {
             if (text == "00") return string.Empty;
             string output = string.Empty;
             int number = int.Parse(text);
             if (number > 20)
             {
-                if (number % 10 == 0) output = $"{numbersEng[number - (number % 10)]} ";//для 30,40,50 ...
-                else output = $"{numbersEng[number - (number % 10)]}{numbersEng[107]}" + $"{numbersEng[number % 10]}"; // для десятків і одиниць разом
+                if (number % 10 == 0) output = $"{numbersOfDictionary[number - (number % 10)]} ";//для 30,40,50 ...
+                else output = $"{numbersOfDictionary[number - (number % 10)]}{numbersOfDictionary[107]}" + $"{numbersOfDictionary[number % 10]}"; // для десятків і одиниць разом
             }
-            else output = numbersEng[number];
+            else output = numbersOfDictionary[number];
             return output;
         }
         private static Dictionary<int, string> FillingEng()
